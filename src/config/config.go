@@ -12,6 +12,7 @@ import (
 var (
 	Connection = ""
 	Port       = 0
+	DBType     = ""
 )
 
 func LoadConfig() {
@@ -27,7 +28,8 @@ func LoadConfig() {
 	}
 
 	//Connection = "'Server=SERVIDOR\\SQLSERVER;Database=eCommerce;Trusted Connection=true;'"
-	fmt.Println(os.Getenv("DB_SERVER"))
-	fmt.Println(os.Getenv("DB_NAME"))
+	// fmt.Println(os.Getenv("DB_SERVER"))
+	// fmt.Println(os.Getenv("DB_NAME"))
 	Connection = fmt.Sprintf("'Server=%s;Database=%s;Trusted Connection=true'", os.Getenv("DB_SERVER"), os.Getenv("DB_NAME"))
+	DBType = os.Getenv("DB_TYPE")
 }

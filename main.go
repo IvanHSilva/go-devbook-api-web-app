@@ -9,13 +9,15 @@ import (
 )
 
 func main() {
-	fmt.Println()
-	fmt.Println("API")
+	// fmt.Println()
+	// fmt.Println("API")
 	fmt.Println()
 
 	config.LoadConfig()
-	fmt.Println(config.Connection)
-	fmt.Println(config.Port)
+	// fmt.Println(config.Connection)
+	// fmt.Println(config.Port)
 	r := router.Generate()
+
+	fmt.Printf("Escutando na porta %d", config.Port)
 	log.Fatal(http.ListenAndServe(":5000", r))
 }
