@@ -1,6 +1,7 @@
 package main
 
 import (
+	"api/src/config"
 	"api/src/router"
 	"fmt"
 	"log"
@@ -12,6 +13,9 @@ func main() {
 	fmt.Println("API")
 	fmt.Println()
 
+	config.LoadConfig()
+	fmt.Println(config.Connection)
+	fmt.Println(config.Port)
 	r := router.Generate()
 	log.Fatal(http.ListenAndServe(":5000", r))
 }
