@@ -32,6 +32,11 @@ func InsertUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err = user.CheckUser(); err != nil {
+		responses.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
 	db, err := db.DBConnect()
 	if err != nil {
 		responses.Error(w, http.StatusInternalServerError, err)
