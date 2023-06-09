@@ -19,8 +19,8 @@ func NewUserRepository(db *sql.DB) *users {
 func (repository users) Insert(user models.User) (uint64, error) {
 	//
 	//today := time.Now()
-	//regDate := today.Format("01/02/2006")
-	//fmt.Println(today.Format("02/01/2006"))
+	//regDate := today.Format("01/02/2006") // Pt-BR
+	//fmt.Println(today.Format("02/01/2006")) // USA
 
 	statement, err := repository.db.Prepare("INSERT INTO Users (Name, EMail, Password, RegDate) VALUES (?, ?, ?, ?)")
 	if err != nil {

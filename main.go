@@ -18,6 +18,6 @@ func main() {
 	// fmt.Println(config.Port)
 	r := router.Generate()
 
-	fmt.Printf("Escutando na porta %d", config.Port)
+	fmt.Printf("Escutando na porta %d\n", config.Port)
 	log.Fatal(http.ListenAndServe(":5000", r))
 }
