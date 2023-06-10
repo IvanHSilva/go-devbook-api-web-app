@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strings"
 )
 
 func SelectUsers(w http.ResponseWriter, r *http.Request) {
@@ -16,6 +17,25 @@ func SelectUsers(w http.ResponseWriter, r *http.Request) {
 
 func SelectUser(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Selecionado um usuário!"))
+}
+
+func SearchUser(w http.ResponseWriter, r *http.Request) {
+	//
+	criteria := strings.ToLower(r.URL.Query().Get("user"))
+	db, err := db.DBConnect()
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repository := repositories.NewUserRepository(db)
+	users, err := repository.Search(criteria)
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, users)
 }
 
 func InsertUser(w http.ResponseWriter, r *http.Request) {

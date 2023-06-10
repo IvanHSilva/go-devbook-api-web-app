@@ -20,6 +20,13 @@ var usersRoutes = []Route{
 		Function:    controllers.SelectUser,
 		AuthRequire: false,
 	},
+	// SEARCH
+	{
+		URI:         "/user",
+		Method:      http.MethodGet,
+		Function:    controllers.SearchUser,
+		AuthRequire: false,
+	},
 	// INSERT
 	{
 		URI:         "/user/{userId}",

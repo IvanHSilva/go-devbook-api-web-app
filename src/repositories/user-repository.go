@@ -46,3 +46,36 @@ func (repository users) Insert(user models.User) (uint64, error) {
 
 	// return uint64(lastID), nil
 }
+
+func (respository users) Search(criteria string) ([]models.User, error) {
+	//
+	criteria = fmt.Sprintf("%%%s%%", criteria)
+
+	rows, err := respository.db.Query(
+		"SELECT Id, Name, EMail, RegDate FROM Users WHERE Name LIKE ?", criteria,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var users []models.User
+	for rows.Next() {
+		var user models.User
+
+		if err = rows.Scan(
+			&user.ID,
+			&user.Name,
+			&user.EMail,
+			&user.RegDate,
+		); err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	return users, nil
+}
