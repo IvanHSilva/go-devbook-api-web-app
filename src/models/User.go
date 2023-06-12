@@ -14,22 +14,22 @@ type User struct {
 	RegDate string `json:"regdate,omitempty"`
 }
 
-func (user *User) CheckUser() error {
-	if err := user.validate(); err != nil {
+func (user *User) CheckUser(level string) error {
+	if err := user.validate(level); err != nil {
 		return err
 	}
 	user.trim()
 	return nil
 }
 
-func (user *User) validate() error {
+func (user *User) validate(level string) error {
 	if user.Name == "" {
 		return errors.New("nome é obrigatório e deve ser informado")
 	}
 	if user.EMail == "" {
 		return errors.New("E-Mail é obrigatório e deve ser informado")
 	}
-	if user.Pass == "" {
+	if level == "ins" && user.Pass == "" {
 		return errors.New("senha é obrigatória e deve ser informada")
 	}
 	if user.RegDate == "" {

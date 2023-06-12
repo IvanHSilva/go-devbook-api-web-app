@@ -16,6 +16,32 @@ func NewUserRepository(db *sql.DB) *users {
 	return &users{db}
 }
 
+func (repository users) Select(ID uint64) (models.User, error) {
+	//
+	rows, err := repository.db.Query(
+		"SELECT Id, Name, EMail, RegDate FROM Users WHERE Id = ?", ID,
+	)
+	if err != nil {
+		return models.User{}, err
+	}
+	defer rows.Close()
+
+	var user models.User
+	if rows.Next() {
+
+		if err = rows.Scan(
+			&user.ID,
+			&user.Name,
+			&user.EMail,
+			&user.RegDate,
+		); err != nil {
+			return models.User{}, err
+		}
+	}
+
+	return user, nil
+}
+
 func (repository users) Insert(user models.User) (uint64, error) {
 	//
 	//today := time.Now()
@@ -47,18 +73,36 @@ func (repository users) Insert(user models.User) (uint64, error) {
 	// return uint64(lastID), nil
 }
 
-func (respository users) Search(criteria string) ([]models.User, error) {
+func (repository users) Update(ID uint64, user models.User) error {
+	//
+	statement, err := repository.db.Prepare(
+		"UPDATE Users SET Name = ?, EMail = ?, RegDate = ? WHERE Id = ?")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	regDate, err := time.Parse("02/01/2006", user.RegDate)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err := statement.Exec(user.Name, user.EMail, regDate, ID); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (repository users) Search(criteria string) ([]models.User, error) {
 	//
 	criteria = fmt.Sprintf("%%%s%%", criteria)
 
-	rows, err := respository.db.Query(
+	rows, err := repository.db.Query(
 		"SELECT Id, Name, EMail, RegDate FROM Users WHERE Name LIKE ?", criteria,
 	)
-
 	if err != nil {
 		return nil, err
 	}
-
 	defer rows.Close()
 
 	var users []models.User
