@@ -93,6 +93,21 @@ func (repository users) Update(ID uint64, user models.User) error {
 	return nil
 }
 
+func (repository users) Delete(ID uint64) error {
+	//
+	statement, err := repository.db.Prepare(
+		"DELETE FROM Users WHERE Id = ?")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err := statement.Exec(ID); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (repository users) Search(criteria string) ([]models.User, error) {
 	//
 	criteria = fmt.Sprintf("%%%s%%", criteria)
