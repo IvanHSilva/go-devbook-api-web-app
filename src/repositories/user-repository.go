@@ -138,3 +138,23 @@ func (repository users) Search(criteria string) ([]models.User, error) {
 
 	return users, nil
 }
+
+func (repository users) CheckMail(email string) (models.User, error) {
+	//
+	row, err := repository.db.Query(
+		"SELECT Id, EMail, Password FROM Users WHERE EMail = ?", email,
+	)
+	if err != nil {
+		return models.User{}, err
+	}
+	defer row.Close()
+
+	var user models.User
+	if row.Next() {
+		if err = row.Scan(&user.ID, &user.EMail, &user.Pass); err != nil {
+			return models.User{}, err
+		}
+	}
+
+	return user, nil
+}
