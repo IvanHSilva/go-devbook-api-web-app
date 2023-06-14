@@ -13,6 +13,7 @@ var (
 	Connection = ""
 	Port       = 0
 	DBType     = ""
+	SecretKey  []byte
 )
 
 func LoadConfig() {
@@ -32,4 +33,6 @@ func LoadConfig() {
 	// fmt.Println(os.Getenv("DB_NAME"))
 	Connection = fmt.Sprintf("'Server=%s;Database=%s;Trusted Connection=true'", os.Getenv("DB_SERVER"), os.Getenv("DB_NAME"))
 	DBType = os.Getenv("DB_TYPE")
+
+	SecretKey = []byte(os.Getenv("SECRET_KEY"))
 }
