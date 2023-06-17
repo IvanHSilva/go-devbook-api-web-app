@@ -11,21 +11,21 @@ var usersRoutes = []Route{
 		URI:         "/users",
 		Method:      http.MethodGet,
 		Function:    controllers.SelectUsers,
-		AuthRequire: true,
+		AuthRequire: false,
 	},
 	// SELECT One
 	{
 		URI:         "/user/{userId}",
 		Method:      http.MethodGet,
 		Function:    controllers.SelectUser,
-		AuthRequire: false,
+		AuthRequire: true,
 	},
 	// SEARCH
 	{
 		URI:         "/user",
 		Method:      http.MethodGet,
 		Function:    controllers.SearchUser,
-		AuthRequire: false,
+		AuthRequire: true,
 	},
 	// INSERT
 	{
@@ -39,13 +39,13 @@ var usersRoutes = []Route{
 		URI:         "/user/{userId}",
 		Method:      http.MethodPut,
 		Function:    controllers.UpdateUser,
-		AuthRequire: false,
+		AuthRequire: true,
 	},
 	// DELETE
 	{
 		URI:         "/user/{userId}",
 		Method:      http.MethodDelete,
 		Function:    controllers.DeleteUser,
-		AuthRequire: false,
+		AuthRequire: true,
 	},
 }
