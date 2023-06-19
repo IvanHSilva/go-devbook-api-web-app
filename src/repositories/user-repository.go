@@ -158,3 +158,18 @@ func (repository users) CheckMail(email string) (models.User, error) {
 
 	return user, nil
 }
+
+func (repository users) Follow(userId, followerId uint64) error {
+	//
+	statement, err := repository.db.Prepare(
+		"INSERT INTO FollowersUsers (UserId, FollowerId) VALUES (?, ?)")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err := statement.Exec(userId, followerId); err != nil {
+		return err
+	}
+	return nil
+}

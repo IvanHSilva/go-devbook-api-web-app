@@ -20,7 +20,7 @@ var usersRoutes = []Route{
 		Function:    controllers.SelectUser,
 		AuthRequire: true,
 	},
-	// SEARCH
+	// SEARCH *
 	{
 		URI:         "/user",
 		Method:      http.MethodGet,
@@ -46,6 +46,13 @@ var usersRoutes = []Route{
 		URI:         "/user/{userId}",
 		Method:      http.MethodDelete,
 		Function:    controllers.DeleteUser,
+		AuthRequire: true,
+	},
+	// FOLLOW *
+	{
+		URI:         "/user/{userId}/follow",
+		Method:      http.MethodPost,
+		Function:    controllers.FollowUser,
 		AuthRequire: true,
 	},
 }
