@@ -224,7 +224,7 @@ func (repository users) WhoFollows(userId uint64) ([]models.User, error) {
 	//
 	rows, err := repository.db.Query(`
 		SELECT u.Id, u.Name, u.EMail, u.RegDate FROM Users u
-		INNER JOIN FollowersUsers f on u.Id = f.UserId
+		INNER JOIN FollowersUsers f ON u.Id = f.UserId
 		WHERE f.FollowerId = ?`, userId)
 
 	if err != nil {
@@ -249,4 +249,37 @@ func (repository users) WhoFollows(userId uint64) ([]models.User, error) {
 	}
 
 	return users, nil
+}
+
+func (repository users) CheckPass(userId uint64) (string, error) {
+	//
+	row, err := repository.db.Query("SELECT Password FROM Users WHERE Id = ?", userId)
+	if err != nil {
+		return "", err
+	}
+	defer row.Close()
+
+	var user models.User
+	if row.Next() {
+		if err = row.Scan(&user.Pass); err != nil {
+			return "", err
+		}
+	}
+
+	return user.Pass, nil
+}
+
+func (repository users) PassUpdate(userId uint64, pass string) error {
+	//
+	statement, err := repository.db.Prepare(
+		"UPDATE Users SET Password = ? WHERE Id = ?")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err := statement.Exec(pass, userId); err != nil {
+		return err
+	}
+	return nil
 }

@@ -6,6 +6,7 @@ import (
 	"api/src/models"
 	"api/src/repositories"
 	"api/src/responses"
+	"api/src/security"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -328,4 +329,75 @@ func WhoUserFollows(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responses.JSON(w, http.StatusOK, users)
+}
+
+func PassUpdate(w http.ResponseWriter, r *http.Request) {
+	//
+	params := mux.Vars(r)
+
+	userId, err := strconv.ParseUint(params["userId"], 10, 64)
+	fmt.Println(userId)
+	if err != nil {
+		responses.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	tokenUserId, err := authentication.ExtractUserID(r)
+	fmt.Println(tokenUserId)
+	if err != nil {
+		responses.Error(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	if userId != tokenUserId {
+		responses.Error(w, http.StatusForbidden,
+			errors.New("não é possível atualizar senha de usuário de Id diferente"))
+		return
+	}
+
+	bodyRequest, err := io.ReadAll(r.Body)
+	if err != nil {
+		responses.Error(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	var pass models.Pass
+	if err = json.Unmarshal(bodyRequest, &pass); err != nil {
+		responses.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	db, err := db.DBConnect()
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repository := repositories.NewUserRepository(db)
+	oldpass, err := repository.CheckPass(userId)
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if err = security.CheckPass(oldpass, pass.OldPass); err != nil {
+		responses.Error(w, http.StatusUnauthorized,
+			errors.New("senha incorreta"))
+		return
+	}
+
+	hash, err := security.Hash(pass.NewPass)
+	if err != nil {
+		responses.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	if err = repository.PassUpdate(userId, string(hash)); err != nil {
+		responses.Error(w, http.StatusInternalServerError,
+			errors.New("senha incorreta"))
+		return
+	}
+
+	responses.JSON(w, http.StatusNoContent, nil)
 }
