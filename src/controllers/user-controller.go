@@ -121,7 +121,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		responses.Error(w, http.StatusUnauthorized, err)
 		return
 	}
-	fmt.Println(tokenUserId)
+	//fmt.Println(tokenUserId)
 
 	if userId != tokenUserId {
 		responses.Error(w, http.StatusForbidden,
