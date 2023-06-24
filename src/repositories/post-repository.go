@@ -3,6 +3,7 @@ package repositories
 import (
 	"api/src/models"
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -19,8 +20,7 @@ func NewPostRepository(db *sql.DB) *posts {
 func (repository posts) Select(ID uint64) (models.Post, error) {
 	//
 	rows, err := repository.db.Query(
-		`SELECT p.* FROM Posts p 
-		INNER JOIN Users u ON u.Id = p.AuthorId WHERE p.Id = ?`, ID,
+		`SELECT * FROM Posts WHERE Id = ?`, ID,
 	)
 	if err != nil {
 		return models.Post{}, err
@@ -67,4 +67,31 @@ func (repository posts) Insert(post models.Post) (uint64, error) {
 
 	fmt.Println(result.RowsAffected())
 	return 1, nil
+}
+
+func (repository posts) CheckTitle(userId uint64, title string) (bool, error) {
+	//
+	row, err := repository.db.Query(
+		"SELECT Id FROM Posts WHERE AuthorId = ? AND Title LIKE ?", userId, title,
+	)
+	if err != nil {
+		return false, err
+	}
+	defer row.Close()
+
+	var post models.Post
+	if row.Next() {
+		if err = row.Scan(&post.Id); err != nil {
+			return false, err
+		}
+	}
+
+	postId := &post.Id
+	PID := *postId
+
+	if PID > 0 {
+		return true, errors.New("esse título já existe na postagem")
+	}
+
+	return false, nil
 }

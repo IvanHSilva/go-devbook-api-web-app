@@ -91,6 +91,13 @@ func InsertPost(w http.ResponseWriter, r *http.Request) {
 	post.AuthorName = postName
 
 	repository := repositories.NewPostRepository(db)
+
+	result, err := repository.CheckTitle(userId, post.Title)
+	if err != nil || result {
+		responses.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
 	postId, err := repository.Insert(post)
 	if err != nil {
 		responses.Error(w, http.StatusInternalServerError, err)
