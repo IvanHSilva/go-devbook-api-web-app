@@ -119,6 +119,21 @@ func (repository posts) Update(postId uint64, post models.Post) error {
 	return nil
 }
 
+func (repository posts) Delete(ID uint64) error {
+	//
+	statement, err := repository.db.Prepare(
+		"DELETE FROM Posts WHERE Id = ?")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err := statement.Exec(ID); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (repository posts) CheckTitle(userId uint64, title string) (bool, error) {
 	//
 	row, err := repository.db.Query(
