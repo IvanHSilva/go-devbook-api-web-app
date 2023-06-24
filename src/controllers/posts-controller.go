@@ -9,6 +9,9 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 func SelectPosts(w http.ResponseWriter, r *http.Request) {
@@ -16,7 +19,30 @@ func SelectPosts(w http.ResponseWriter, r *http.Request) {
 }
 
 func SelectPost(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Selecionando uma postagens!"))
+	//
+	params := mux.Vars(r)
+
+	postId, err := strconv.ParseUint(params["postId"], 10, 64)
+	if err != nil {
+		responses.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	db, err := db.DBConnect()
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repository := repositories.NewPostRepository(db)
+	post, err := repository.Select(postId)
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, post)
 }
 
 func SearchPost(w http.ResponseWriter, r *http.Request) {
@@ -43,8 +69,6 @@ func InsertPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	post.AuthorId = userId
-
 	if err = post.CheckPost(); err != nil {
 		responses.Error(w, http.StatusBadRequest, err)
 		return
@@ -56,6 +80,15 @@ func InsertPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer db.Close()
+
+	post.AuthorId = userId
+	repoUser := repositories.NewUserRepository(db)
+	postName, err := repoUser.GetUserName(userId)
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+	post.AuthorName = postName
 
 	repository := repositories.NewPostRepository(db)
 	postId, err := repository.Insert(post)

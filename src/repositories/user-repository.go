@@ -283,3 +283,26 @@ func (repository users) PassUpdate(userId uint64, pass string) error {
 	}
 	return nil
 }
+
+func (repository users) GetUserName(ID uint64) (string, error) {
+	//
+	row, err := repository.db.Query(
+		"SELECT Name FROM Users WHERE Id = ?", ID,
+	)
+	if err != nil {
+		return "", err
+	}
+	defer row.Close()
+
+	var user models.User
+	if row.Next() {
+		if err = row.Scan(&user.Name); err != nil {
+			return "ERRO", err
+		}
+	}
+
+	name := &user.Name
+	username := []byte(*name)
+	// fmt.Println(username)
+	return string(username), nil
+}
