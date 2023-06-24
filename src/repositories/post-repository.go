@@ -99,6 +99,26 @@ func (repository posts) Search(userId uint64) ([]models.Post, error) {
 	return posts, nil
 }
 
+func (repository posts) Update(postId uint64, post models.Post) error {
+	//
+	statement, err := repository.db.Prepare(
+		"UPDATE Posts SET Title = ?, Content = ?, RegDate = ? WHERE Id = ?")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	regDate, err := time.Parse("02/01/2006", post.RegDate)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err := statement.Exec(post.Title, post.Content, regDate, postId); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (repository posts) CheckTitle(userId uint64, title string) (bool, error) {
 	//
 	row, err := repository.db.Query(
