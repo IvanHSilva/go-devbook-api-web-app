@@ -64,13 +64,6 @@ func (repository users) Insert(user models.User) (uint64, error) {
 	}
 	fmt.Println(result.RowsAffected())
 	return 1, nil
-
-	// lastID, err := result.LastInsertId()
-	// if err != nil {
-	// 	return 0, err
-	// }
-
-	// return uint64(lastID), nil
 }
 
 func (repository users) Update(ID uint64, user models.User) error {

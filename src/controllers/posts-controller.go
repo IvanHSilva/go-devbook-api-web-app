@@ -15,7 +15,27 @@ import (
 )
 
 func SelectPosts(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Selecionando todas as postagens!"))
+	userId, err := authentication.ExtractUserID(r)
+	if err != nil {
+		responses.Error(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	db, err := db.DBConnect()
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repository := repositories.NewPostRepository(db)
+	posts, err := repository.Search(userId)
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, posts)
 }
 
 func SelectPost(w http.ResponseWriter, r *http.Request) {
@@ -46,7 +66,7 @@ func SelectPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func SearchPost(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Procurando postagens!"))
+	w.Write([]byte("Procurando postagem!"))
 }
 
 func InsertPost(w http.ResponseWriter, r *http.Request) {
@@ -106,10 +126,6 @@ func InsertPost(w http.ResponseWriter, r *http.Request) {
 	post.Id = postId
 
 	responses.JSON(w, http.StatusCreated, post)
-}
-
-func UpdatePost(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Atualizando postagem!"))
 }
 
 func DeletePost(w http.ResponseWriter, r *http.Request) {
