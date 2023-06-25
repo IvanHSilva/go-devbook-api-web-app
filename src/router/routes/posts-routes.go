@@ -22,7 +22,7 @@ var routesPosts = []Route{
 	},
 	// SEARCH *
 	{
-		URI:         "/post",
+		URI:         "/user/{userId}/post",
 		Method:      http.MethodGet,
 		Function:    controllers.SearchPost,
 		AuthRequire: true,
@@ -47,4 +47,19 @@ var routesPosts = []Route{
 		Method:      http.MethodDelete,
 		Function:    controllers.DeletePost,
 		AuthRequire: true,
-	}}
+	},
+	// LIKE *
+	{
+		URI:         "/post/{postId}/like",
+		Method:      http.MethodPost,
+		Function:    controllers.LikePost,
+		AuthRequire: true,
+	},
+	// UNLIKE *
+	{
+		URI:         "/post/{postId}/unlike",
+		Method:      http.MethodPost,
+		Function:    controllers.UnlikePost,
+		AuthRequire: true,
+	},
+}

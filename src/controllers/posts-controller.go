@@ -30,7 +30,7 @@ func SelectPosts(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	repository := repositories.NewPostRepository(db)
-	posts, err := repository.Search(userId)
+	posts, err := repository.SelectAll(userId)
 	if err != nil {
 		responses.Error(w, http.StatusInternalServerError, err)
 		return
@@ -67,7 +67,30 @@ func SelectPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func SearchPost(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Procurando postagem!"))
+	//
+	params := mux.Vars(r)
+
+	userId, err := strconv.ParseUint(params["userId"], 10, 64)
+	if err != nil {
+		responses.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	db, err := db.DBConnect()
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repository := repositories.NewPostRepository(db)
+	posts, err := repository.Search(userId)
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, posts)
 }
 
 func InsertPost(w http.ResponseWriter, r *http.Request) {
@@ -227,6 +250,58 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err = repository.Delete(postId); err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusNoContent, nil)
+}
+
+func LikePost(w http.ResponseWriter, r *http.Request) {
+	//
+	params := mux.Vars(r)
+
+	postId, err := strconv.ParseUint(params["postId"], 10, 64)
+	if err != nil {
+		responses.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	db, err := db.DBConnect()
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repository := repositories.NewPostRepository(db)
+	if err = repository.Like(postId); err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusNoContent, nil)
+}
+
+func UnlikePost(w http.ResponseWriter, r *http.Request) {
+	//
+	params := mux.Vars(r)
+
+	postId, err := strconv.ParseUint(params["postId"], 10, 64)
+	if err != nil {
+		responses.Error(w, http.StatusBadRequest, err)
+		return
+	}
+
+	db, err := db.DBConnect()
+	if err != nil {
+		responses.Error(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repository := repositories.NewPostRepository(db)
+	if err = repository.Unlike(postId); err != nil {
 		responses.Error(w, http.StatusInternalServerError, err)
 		return
 	}

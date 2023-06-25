@@ -17,6 +17,36 @@ func NewPostRepository(db *sql.DB) *posts {
 	return &posts{db}
 }
 
+func (repository posts) SelectAll(userId uint64) ([]models.Post, error) {
+	//
+	rows, err := repository.db.Query(
+		"SELECT * FROM Posts WHERE AuthorId = ? ORDER BY RegDate DESC", userId,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var posts []models.Post
+	for rows.Next() {
+		var post models.Post
+		if err = rows.Scan(
+			&post.Id,
+			&post.Title,
+			&post.Content,
+			&post.AuthorId,
+			&post.AuthorName,
+			&post.Likes,
+			&post.RegDate,
+		); err != nil {
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+
+	return posts, nil
+}
+
 func (repository posts) Select(ID uint64) (models.Post, error) {
 	//
 	rows, err := repository.db.Query(
@@ -159,4 +189,34 @@ func (repository posts) CheckTitle(userId uint64, title string) (bool, error) {
 	}
 
 	return false, nil
+}
+
+func (repository posts) Like(postId uint64) error {
+	//
+	statement, err := repository.db.Prepare(
+		"UPDATE Posts SET Likes = Likes + 1 WHERE Id = ?")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err := statement.Exec(postId); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (repository posts) Unlike(postId uint64) error {
+	//
+	statement, err := repository.db.Prepare(
+		"UPDATE Posts SET Likes = Likes - 1 WHERE Likes > 0  AND Id = ?")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err := statement.Exec(postId); err != nil {
+		return err
+	}
+	return nil
 }
