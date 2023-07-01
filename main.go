@@ -28,9 +28,9 @@ func main() {
 	config.LoadConfig()
 	// fmt.Println(config.Connection)
 	// fmt.Println(config.Port)
-	fmt.Println(config.SecretKey)
+	// fmt.Println(config.SecretKey)
 	r := router.Generate()
 
 	fmt.Printf("Escutando na porta %d\n", config.Port)
-	log.Fatal(http.ListenAndServe(":5000", r))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.Port), r))
 }

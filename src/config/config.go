@@ -19,7 +19,7 @@ var (
 func LoadConfig() {
 	var err error
 
-	if godotenv.Load(); err != nil {
+	if err = godotenv.Load(); err != nil {
 		log.Fatal(err)
 	}
 

@@ -177,7 +177,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		responses.Error(w, http.StatusUnauthorized, err)
 		return
 	}
-	fmt.Println(tokenUserId)
+	// fmt.Println(tokenUserId)
 
 	if userId != tokenUserId {
 		responses.Error(w, http.StatusForbidden,
@@ -336,7 +336,7 @@ func PassUpdate(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
 	userId, err := strconv.ParseUint(params["userId"], 10, 64)
-	fmt.Println(userId)
+	// fmt.Println(userId)
 	if err != nil {
 		responses.Error(w, http.StatusBadRequest, err)
 		return

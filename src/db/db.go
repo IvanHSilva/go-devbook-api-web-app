@@ -3,7 +3,6 @@ package db
 import (
 	"api/src/config"
 	"database/sql"
-	"fmt"
 
 	_ "github.com/denisenkom/go-mssqldb"
 )
@@ -22,7 +21,7 @@ func DBConnect() (*sql.DB, error) {
 		db.Close()
 	}
 
-	fmt.Println("Conexão Ok!")
-	fmt.Println(db.Stats().OpenConnections)
+	// fmt.Println("Conexão Ok!")
+	// fmt.Println(db.Stats().OpenConnections)
 	return db, nil
 }
