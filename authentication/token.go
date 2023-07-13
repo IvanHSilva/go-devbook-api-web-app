@@ -65,6 +65,7 @@ func ExtractUserID(r *http.Request) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
+	//fmt.Printf("Token %s\n", strToken)
 
 	if permissions, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		// fmt.Println(permissions["UserID"])
@@ -73,6 +74,7 @@ func ExtractUserID(r *http.Request) (uint64, error) {
 			return 0, err
 		}
 
+		//fmt.Printf("Token UserId %d\n", userId)
 		return userId, nil
 	}
 

@@ -21,6 +21,7 @@ func SelectPosts(w http.ResponseWriter, r *http.Request) {
 		responses.Error(w, http.StatusUnauthorized, err)
 		return
 	}
+	//fmt.Printf("SelecPosts %d", userId)
 
 	db, err := db.DBConnect()
 	if err != nil {
@@ -100,6 +101,7 @@ func InsertPost(w http.ResponseWriter, r *http.Request) {
 		responses.Error(w, http.StatusUnauthorized, err)
 		return
 	}
+	//fmt.Printf("InsertPost %d\n", userId)
 
 	bodyRequest, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -133,6 +135,7 @@ func InsertPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	post.AuthorName = postName
+	//fmt.Printf("InsertPost %s\n", postName)
 
 	repository := repositories.NewPostRepository(db)
 

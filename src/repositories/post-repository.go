@@ -78,12 +78,13 @@ func (repository posts) Select(ID uint64) (models.Post, error) {
 
 func (repository posts) Insert(post models.Post) (uint64, error) {
 	//
-	statement, err := repository.db.Prepare(
-		"INSERT INTO Posts (Title, Content, AuthorId, AuthorName, RegDate) VALUES (?, ?, ?, ?, ?)")
+	var command = "INSERT INTO Posts (Title, Content, AuthorId, AuthorName, RegDate) VALUES (?, ?, ?, ?, ?)"
+	statement, err := repository.db.Prepare(command)
 	if err != nil {
 		return 0, err
 	}
 	defer statement.Close()
+	//fmt.Printf("Insert Function %s\n", command)
 
 	regDate, err := time.Parse("02/01/2006", post.RegDate)
 	if err != nil {
@@ -94,6 +95,7 @@ func (repository posts) Insert(post models.Post) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
+	//fmt.Printf("Insert Parameters %s %s %d %s %s\n", post.Title, post.Content, post.AuthorId, post.AuthorName, regDate)
 
 	fmt.Println(result.RowsAffected())
 	return 1, nil

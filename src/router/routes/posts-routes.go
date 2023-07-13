@@ -29,7 +29,7 @@ var routesPosts = []Route{
 	},
 	// INSERT
 	{
-		URI:         "/post/{postId}",
+		URI:         "/post",
 		Method:      http.MethodPost,
 		Function:    controllers.InsertPost,
 		AuthRequire: false,
